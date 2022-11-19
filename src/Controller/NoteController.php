@@ -18,6 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class NoteController extends AbstractController
 {
+    public function __construct(NoteRepository $noteRepository)
+    {
+        $this->noteRepository = $noteRepository;
+    }
+
     /**
      * @Route("/", name="app_note_index", methods={"GET"})
      */
@@ -40,12 +45,8 @@ class NoteController extends AbstractController
 
         if ($form->isSubmitted()) {
             $tags = $request->get('note')['tags'];
-            foreach ($tags as $tag) {
-                $newTag = new Tag();
-                $newTag->setTitle($tag);
-                $note->addTag($newTag);
-            }
-            $noteRepository->add($note);
+
+            $this->manageTags($tags, $note);
 
             return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -57,23 +58,28 @@ class NoteController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id}", name="app_note_show", methods={"GET"})
-     */
-    /*  public function show(Request $request, Note $note): Response
-      {
-          return $this->render('note/show.html.twig', [
-              'note' => $note,
-          ]);
-      }*/
+    private function manageTags($tags, $note)
+    {
+        foreach ($tags as $tagItem) {
+            $tag = $this->getDoctrine()->getRepository(Tag::class)->findOneBy(['title' => $tagItem]);
+            if (is_null($tag)) {
+                $tag = new Tag();
+                $tag->setTitle($tagItem);
+            }
+            $note->addTag($tag);
+        }
+
+        $this->noteRepository->add($note);
+    }
 
     /**
      * @Route("/{id}/edit", name="app_note_edit", methods={"GET", "POST"})
      */
     public function edit(Request $request, Note $note, NoteRepository $noteRepository): Response
     {
-        if(!is_null($note->getDeletedAt()) || $note->getUser()->getId() !== $this->getUser()->getId())
+        if (!is_null($note->getDeletedAt()) || $note->getUser()->getId() !== $this->getUser()->getId()) {
             return new RedirectResponse($this->generateUrl('app_note_index'));
+        }
 
         $form = $this->createForm(NoteType::class, $note);
         $form->handleRequest($request);
@@ -89,15 +95,7 @@ class NoteController extends AbstractController
                 $note->removeTag($tag);
             }
 
-            foreach ($tags as $tag) {
-                $newTag = new Tag();
-                $newTag->setTitle($tag);
-                $note->addTag($newTag);
-            }
-
-                $noteRepository->add($note);
-
-
+            $this->manageTags($tags, $note);
             return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -113,7 +111,7 @@ class NoteController extends AbstractController
      */
     public function delete(Request $request, Note $note, NoteRepository $noteRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$note->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $note->getId(), $request->request->get('_token'))) {
             $noteRepository->remove($note);
         }
 
@@ -140,7 +138,7 @@ class NoteController extends AbstractController
      */
     public function restore(Request $request, Note $note): Response
     {
-        if ($this->isCsrfTokenValid('restore'.$note->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('restore' . $note->getId(), $request->request->get('_token'))) {
             $note->setDeletedAt(null);
             $this->getDoctrine()->getManager()->flush();
         }
