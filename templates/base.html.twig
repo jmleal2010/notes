@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+        <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+        <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    {% endblock %}
+</head>
+<body>
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <nav class="navbar navbar-expand-lg w-100 navbar-dark bg-dark" aria-label="Third navbar example">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Logo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample03"
+                    aria-controls="navbarsExample03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarsExample03">
+                <ul class="navbar-nav w-100 me-auto mb-2 mb-sm-0 d-inline-flex justify-content-between">
+                    <div class="d-flex">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{{ path('app_index') }}">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ path('app_note_index') }}">Notas</a>
+                        </li>
+                    </div>
+                    <div>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle dropdown-menu-start" href="#" data-bs-toggle="dropdown"
+                               aria-expanded="false">{{ app.user }}</a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{path('fos_user_change_password')}}"><i class="mdi mdi-key"></i> Cambiar contraseña</a>
+                                </li>
+                                <li><a class="dropdown-item" href="{{ path('fos_user_security_logout') }}"><i
+                                                class="mdi mdi-logout"></i> Salir</a></li>
+                            </ul>
+                        </li>
+                    </div>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+</header>
+<div class="container-fluid">
+    {% block body %}{% endblock %}
+</div>
+
+</body>
+</html>

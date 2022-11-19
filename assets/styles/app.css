@@ -1,0 +1,11 @@
+@import 'bootstrap';
+@import 'datatable.min.css';
+@import '@mdi/font/css/materialdesignicons.min.css';
+
+body{
+    background-color: white;
+}
+
+.pointer{
+    cursor: pointer
+}

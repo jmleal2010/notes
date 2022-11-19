@@ -1,0 +1,11 @@
+{% extends "bundles/FOSUserBundle/layout_fos_user.html.twig" %}
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block title %}
+    Login
+{% endblock title %}
+
+{% block forms %}
+    {{ include('bundles/FOSUserBundle/Security/login_content.html.twig') }}
+{% endblock forms %}
