@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class NoteType extends AbstractType
 {
@@ -22,6 +23,9 @@ class NoteType extends AbstractType
                 'attr' => [
                     'class' => 'form-control',
                 ],
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'Descripción',
@@ -29,10 +33,13 @@ class NoteType extends AbstractType
                     'class' => 'form-control',
                     'rows' => 10,
                 ],
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ])
             ->add('publish', CheckboxType::class, [
                 'label' => 'Es público',
-                'required'=>false
+                'required' => false,
             ])
             ->add('tags', EntityType::class, [
                 'choice_label' => 'title',
@@ -41,6 +48,9 @@ class NoteType extends AbstractType
                 'mapped' => false,
                 'label' => 'Tags',
                 'multiple' => true,
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ]);
     }
 
